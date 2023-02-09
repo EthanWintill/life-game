@@ -19,10 +19,12 @@ class BoardSim{
     boolean[][] boardState;
     int generationsLeft;
     boolean[][] temp;
+    int numThreads;
     
     public BoardSim(inputInformation start){
         boardState = start.board;
         generationsLeft = start.generations;
+        numThreads = 2; //declare num threads
     }
     void run(boolean print) {
         while(generationsLeft>0){
@@ -30,7 +32,7 @@ class BoardSim{
             if(print){
                 System.out.println(this);
                 try {
-                    Thread.sleep(250);
+                    Thread.sleep(150);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -38,15 +40,20 @@ class BoardSim{
         }
     }
     void step()  {
-        temp = new boolean[20][20];
-        cellComputer comp = new cellComputer(0, 1);
-        comp.start();
+        temp = new boolean[30][100];
+
+        cellComputer[] threadArray = new cellComputer[numThreads];
+        for (int i = 0; i < numThreads; i++) {
+            threadArray[i] = new cellComputer(i,numThreads);
+            threadArray[i].start();
+        }
         // comp = new cellComputer(1,2);
         // comp.start();
         try {
-            comp.t.join();
+            for (int i = 0; i < numThreads; i++) {
+                threadArray[i].t.join();
+            }
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         generationsLeft--;
@@ -55,9 +62,9 @@ class BoardSim{
     public int numNeighbors(int r, int c){
         int numNeighbors = 0;
         boolean isLeft = (c==0);
-        boolean isRight = (c==19);
+        boolean isRight = (c==99);
         boolean isTop = (r==0);
-        boolean isBottom = (r==19);
+        boolean isBottom = (r==29);
         if(!isTop && boardState[r-1][c])
             numNeighbors++;
         if(!isTop && !isLeft && boardState[r-1][c-1])
@@ -110,9 +117,9 @@ class BoardSim{
         }
 
         public void run(){
-            int step = 20/threadTotal;            
-            for(int r = step*threadIndex; r< Math.min(20, (step)*(1+threadIndex)); r++){
-                for(int c=0; c<20; c++){
+            int step = 30/threadTotal;            
+            for(int r = step*threadIndex; r< Math.min(30, (step)*(1+threadIndex)); r++){
+                for(int c=0; c<100; c++){
                     int numNeighbors = numNeighbors(r, c);
                     if(numNeighbors==2 && boardState[r][c] || numNeighbors==3)
                         temp[r][c] = true;
@@ -124,9 +131,8 @@ class BoardSim{
     }
 }
 class inputInformation{
-    boolean[][] board = new boolean[20][20];
+    boolean[][] board = new boolean[30][100];
     int generations;
-
 }
 class FileHandler{
     Scanner scan;
