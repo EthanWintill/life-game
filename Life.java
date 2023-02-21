@@ -1,17 +1,26 @@
+import java.util.Arrays;
 import java.util.concurrent.*;
 
 
 public class Life {
     public static void main(String[] args) {
-        FileHandler rickTest = new FileHandler("start.txt");
-        animator basicFrame = new GameOfLifeGUI();
-        inputInformation fileInput = rickTest.parse();
-        basicFrame.animateBoard(fileInput.board);
+        boolean[][] blankBoard = new boolean[50][100];
+        boolean[] blankRow = new boolean[100];
+        Arrays.fill(blankRow, false);
+        for (boolean[] row : blankBoard) {
+            row = Arrays.copyOf(blankRow, blankRow.length);
+        }
+
+
+
+        FileHandler rickTest = new FileHandler("blank.txt");
+        boolean[][] boardFromFile = rickTest.parse();
+        animator basicFrame = new GameOfLifeGUI(blankBoard);
         basicFrame.getUserInput();
-        fileInput.board = basicFrame.getBoard();
-        BoardSim b = new BoardSim(fileInput,2, basicFrame);
+        blankBoard = basicFrame.getBoard();
+        BoardSim b = new BoardSim(blankBoard,50000,2, basicFrame);
         long start = System.currentTimeMillis();
-        b.simulate(false);
+        b.simulate(true);
 
         System.out.println(b);
         System.out.println("Time: " +(System.currentTimeMillis() - start));
@@ -23,13 +32,13 @@ class BoardSim{
     int numThreads;
     animator gui;
     
-    public BoardSim(inputInformation start, int numberOfThreads, animator igui){
-        boardState = start.board;
-        generationsLeft = start.generations;
+    public BoardSim(boolean[][] startingBoard, int startingGenerations, int numberOfThreads, animator igui){
+        boardState = startingBoard;
+        generationsLeft = startingGenerations;
         numThreads = numberOfThreads;
         gui = igui;
     }
-    void simulate(boolean print) {
+    void simulate(boolean animate) {
         while(generationsLeft>0){
             ExecutorService executor = Executors.newFixedThreadPool(numThreads);
             for (int i = 0; i < numThreads; i++) {
@@ -38,14 +47,13 @@ class BoardSim{
                 executor.execute(new BoardUpdater(startRow, endRow, this));
             }
             generationsLeft--;
-            if(print){
-                System.out.println(this);
-            }
-            gui.animateBoard(boardState);
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            if(animate){
+                gui.animateBoard(boardState);
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
             executor.shutdown();
             try {
@@ -54,12 +62,7 @@ class BoardSim{
                 e.printStackTrace();
             }
         }
-        
-        
-        
     }
-    
-    
     public String toString(){
         String result = "";
         for(boolean[] r: boardState){
@@ -87,12 +90,10 @@ class BoardSim{
         
         
         public void run() {
-            boolean[][] nextBoard = new boolean[20][100];
-            
+            boolean[][] nextBoard = new boolean[bSim.boardState.length][bSim.boardState[0].length];
             for (int i = startRow; i < endRow; i++) {
-                for (int j = 0; j < 100; j++) {
+                for (int j = 0; j < bSim.boardState[0].length; j++) {
                     int count = numNeighbors(i, j);
-                    
                     if (bSim.boardState[i][j] && count == 2 || count == 3) {
                         nextBoard[i][j] = true;
                     } else if (!bSim.boardState[i][j] && count == 3) {
@@ -115,9 +116,9 @@ class BoardSim{
             }
             int numNeighbors = 0;
             boolean isLeft = (c==0);
-            boolean isRight = (c==99);
+            boolean isRight = (c==bSim.boardState[0].length-1);
             boolean isTop = (r==0);
-            boolean isBottom = (r==19);
+            boolean isBottom = (r==bSim.boardState.length-1);
             if(!isTop && bSim.boardState[r-1][c])
                 numNeighbors++;
             if(!isTop && !isLeft && bSim.boardState[r-1][c-1])
@@ -138,10 +139,6 @@ class BoardSim{
             return numNeighbors;            
         }
     }
-}
-class inputInformation{
-    boolean[][] board = new boolean[20][100];
-    int generations;
 }
 
 

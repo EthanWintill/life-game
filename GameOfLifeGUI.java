@@ -6,13 +6,16 @@ import java.awt.event.*;
 public class GameOfLifeGUI extends JFrame implements animator {
     private JPanel gamePanel;
     private boolean[][] board;
-    private boolean start = false;
+    private boolean start = true;
     int cellSize;
 
 
-    public GameOfLifeGUI() {
+    public GameOfLifeGUI(boolean[][] startingBoard) {
+        board = startingBoard;
+        int width = board[0].length * 10;
+        int height = board.length * 10+20;
         setTitle("Game of Life");
-        setSize(1000, 500);
+        setSize(width, height);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         gamePanel = new JPanel() {
@@ -37,25 +40,13 @@ public class GameOfLifeGUI extends JFrame implements animator {
                 }
             }
         };
-
-        add(gamePanel);
-        setVisible(true);
-    }
-
-    public void animateBoard(boolean[][] board) {
-        this.board = board;
-        gamePanel.repaint();
-    }
-
-    public void getUserInput() {
         this.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     // Enter key was pressed
                     // Do something here
-                    System.out.println("succuess!");
-                    start = true;
+                    start = !start;
                 }
             }
         });
@@ -71,8 +62,17 @@ public class GameOfLifeGUI extends JFrame implements animator {
                 }
             }
         });
-    
-        while(!start){
+        add(gamePanel);
+        setVisible(true);
+    }
+
+    public void animateBoard(boolean[][] board) {
+        this.board = board;
+        gamePanel.repaint();
+    }
+
+    public void getUserInput() {
+        while(start){
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e1) {

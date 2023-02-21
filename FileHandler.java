@@ -1,5 +1,7 @@
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
@@ -24,25 +26,44 @@ class FileHandler{
             e.printStackTrace();
         }
     }
-    public inputInformation parse(){
-        inputInformation fileInfo = new inputInformation();
+    public boolean[][] parse(){
+        boolean[][] result;
+        int numLines = 0;
+        int lineLength = -1; // initialized to -1 so we can check if it gets updated
+        
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                numLines++;
+                if (lineLength == -1) {
+                    lineLength = line.length();
+                } else if (lineLength != line.length()) {
+                    System.out.println("Error: not all lines have the same length");
+                    return new boolean[0][0];
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        result = new boolean[numLines][lineLength];
+
         int r = 0;
         while(scan.hasNextLine()){
             String line = scan.next();
             if(scan.hasNextLine()){
                 for(int c=0; c<line.length(); c++){
                     if(line.charAt(c)=='.')
-                        fileInfo.board[r][c] = false;
+                        result[r][c] = false;
                     else if(line.charAt(c)=='X')
-                        fileInfo.board[r][c] = true;
+                        result[r][c] = true;
                     else
                         System.out.println("CAN'T READ CHAR: " + line.charAt(c));
                 }            
             }else{
-                fileInfo.generations = Integer.parseInt(line);
+                //fileInfo.generations = Integer.parseInt(line);
             }
             r++;
         }
-        return fileInfo;
+        return result;
     }
 }
