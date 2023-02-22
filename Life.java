@@ -11,14 +11,16 @@ public class Life {
             row = Arrays.copyOf(blankRow, blankRow.length);
         }
 
-
-
-        FileHandler rickTest = new FileHandler("blank.txt");
+        FileHandler rickTest = new FileHandler("start.txt");
         boolean[][] boardFromFile = rickTest.parse();
-        animator basicFrame = new GameOfLifeGUI(blankBoard);
+
+
+        boolean[][] board = boardFromFile;
+
+        animator basicFrame = new GameOfLifeGUI(board);
         basicFrame.getUserInput();
-        blankBoard = basicFrame.getBoard();
-        BoardSim b = new BoardSim(blankBoard,50000,2, basicFrame);
+        board = basicFrame.getBoard();
+        BoardSim b = new BoardSim(board,10,2, basicFrame,true);
         long start = System.currentTimeMillis();
         b.simulate(true);
 
@@ -31,12 +33,15 @@ class BoardSim{
     int generationsLeft;
     int numThreads;
     animator gui;
+    boolean addExtraWork;
     
-    public BoardSim(boolean[][] startingBoard, int startingGenerations, int numberOfThreads, animator igui){
+    public BoardSim(boolean[][] startingBoard, int startingGenerations, int numberOfThreads, animator igui, boolean threadDemo){
         boardState = startingBoard;
         generationsLeft = startingGenerations;
         numThreads = numberOfThreads;
         gui = igui;
+        addExtraWork = threadDemo;
+
     }
     void simulate(boolean animate) {
         while(generationsLeft>0){
@@ -111,8 +116,10 @@ class BoardSim{
         }
         
         public int numNeighbors(int r, int c){
-            for(double i=0; i<70; i++){ //here so there's enough work for the threads to do something.
-                double j = i/3.2;
+            if(bSim.addExtraWork){
+                long startTime = System.nanoTime();
+                while (System.nanoTime() - startTime < 250000) {
+                }
             }
             int numNeighbors = 0;
             boolean isLeft = (c==0);
