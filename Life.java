@@ -20,7 +20,7 @@ public class Life {
         animator basicFrame = new GameOfLifeGUI(board);
         basicFrame.getUserInput();
         board = basicFrame.getBoard();
-        BoardSim b = new BoardSim(board,10,1, basicFrame,true);
+        BoardSim b = new BoardSim(board,10,2, basicFrame,true);
         long start = System.currentTimeMillis();
         b.simulate(true);
 
@@ -117,8 +117,8 @@ class BoardSim{
         
         public int numNeighbors(int r, int c){
             if(bSim.addExtraWork){
-                for(double i=0; i<150000; i++){ //here so there's enough work for the threads to do something.
-                    double j = i/3.2;
+                long startTime = System.nanoTime();
+                while (System.nanoTime() - startTime < 250000) {
                 }
             }
             int numNeighbors = 0;
