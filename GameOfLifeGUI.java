@@ -9,6 +9,14 @@ public class GameOfLifeGUI extends JFrame implements animator {
     private boolean start = true;
     int cellSize;
 
+    /**
+     * Constructs a new GameOfLifeGUI object with the specified starting board.
+     *
+     * @param startingBoard the starting board to use for the game of life
+     * @pre startingBoard is a non-null two-dimensional boolean array
+     * @post a new GameOfLifeGUI object is constructed with the specified starting board
+     *       and the game window is displayed
+     */
 
     public GameOfLifeGUI(boolean[][] startingBoard) {
         board = startingBoard;
@@ -44,8 +52,6 @@ public class GameOfLifeGUI extends JFrame implements animator {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    // Enter key was pressed
-                    // Do something here
                     start = !start;
                 }
             }
@@ -66,10 +72,24 @@ public class GameOfLifeGUI extends JFrame implements animator {
         setVisible(true);
     }
 
+    /**
+     * Updates the board with the specified values and repaints the game panel.
+     *
+     * @param board the updated board to display
+     * @pre board is a non-null two-dimensional boolean array
+     * @post the updated board is displayed and the game panel is repainted
+     */
+
     public void animateBoard(boolean[][] board) {
         this.board = board;
         gamePanel.repaint();
     }
+
+    /**
+     * pauses the game until the enter key is pressed.
+     *
+     * @post enter has been pressed, game is now started
+     */
 
     public void getUserInput() {
         while(start){
@@ -81,6 +101,9 @@ public class GameOfLifeGUI extends JFrame implements animator {
         }
         
     }
+
+    // Pre-condition: None.
+    // Post-condition: Returns a 2D boolean array representing the current state of the Game of Life.
     public boolean[][] getBoard(){
         return board;
     }

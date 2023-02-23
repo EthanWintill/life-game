@@ -9,6 +9,14 @@ class FileHandler{
     
     Scanner scan;
     File file;
+
+    /**
+     * Constructor for FileHandler
+     * @param f the name of the file to be handled
+     * @throws FileNotFoundException if the file is not found
+     * @pre f is not null
+     * @post a new instance of FileHandler is created with scan initialized to a scanner object that reads the specified file
+     */
     public FileHandler(String f)  {
         try {
             file = new File(f);
@@ -17,6 +25,8 @@ class FileHandler{
             e.printStackTrace();
         }
     }
+
+    //takes in board array and writes it to file member variable
     public void writeBoard(BoardSim board){
         try {
             FileWriter author = new FileWriter(file);
@@ -26,11 +36,16 @@ class FileHandler{
             e.printStackTrace();
         }
     }
+    
+    //reads .txt file and parses a board array from it
+    //Pre: each line in the file is exacly the same length, and each character is either a 'X' or a '.'
+    //Post: board now has 'true' for each 'X' and 'false' for each '.'
     public boolean[][] parse(){
         boolean[][] result;
         int numLines = 0;
         int lineLength = -1; // initialized to -1 so we can check if it gets updated
         
+        //find dimensons and check to make sure each line is same length
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -45,8 +60,11 @@ class FileHandler{
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        //initialze array with dimensions we just found
         result = new boolean[numLines][lineLength];
 
+        //translate string from .txt file to booleans in array
         int r = 0;
         while(scan.hasNextLine()){
             String line = scan.next();
@@ -59,8 +77,6 @@ class FileHandler{
                     else
                         System.out.println("CAN'T READ CHAR: " + line.charAt(c));
                 }            
-            }else{
-                //fileInfo.generations = Integer.parseInt(line);
             }
             r++;
         }
